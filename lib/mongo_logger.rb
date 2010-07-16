@@ -66,6 +66,7 @@ class MongoLogger < ActiveSupport::BufferedLogger
   end
 
   def add(severity, message = nil, progname = nil, &block)
+    super and return unless @mongo_record
     unless @level > severity
       if defined?(ActiveRecord) and ActiveRecord::Base.colorize_logging
         # remove colorization done by rails and just save the actual message
