@@ -4,6 +4,9 @@
   <title>Mongo Logs</title>
   <style>
     td { border-top: 1px dotted black; vertical-align: top; }
+    .messages .error { color: red; }
+    .messages .warning { color: orange; }
+    .messages .debug { color: gray; }
   </style>
 </head>
 <body>
@@ -29,6 +32,8 @@
           <%= format_messages(record['messages']['info'], 'info') %>
           <%= format_messages(record['messages']['debug'], 'debug') %>
         </td>
+        <td class="params"><pre><%= record['params'] ? print_detail(record['params']) : '' %></pre></td>
+        <td class="metadata"><pre><%= record['metadata'] ? print_detail(record['metadata']) : '' %></pre></td>
       </tr>
       <% end -%>
     </tbody>

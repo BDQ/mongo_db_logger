@@ -3,6 +3,7 @@ class MongoDBLogging::MongoController < ActionController::Base
   append_view_path(File.join(File.dirname(__FILE__), "../../views"))
   
   helper_method :format_messages
+  helper_method :print_detail
 
   def index
     count      = (params[:count] || 50).to_i
@@ -26,5 +27,19 @@ protected
       output << "<li>#{mess}</li>\n"
     end
     output << "</ul>"
+  end
+  
+  def print_detail( object, indent = 0 )
+    output = ""
+    if object.kind_of? Hash
+     output << "{\n"
+     output << object.collect { |key, value|
+       "  " * indent + "  #{print_detail key} => #{print_detail value, indent+1}"
+     }.join(",\n") << "\n"
+     output << "  " * indent + "}"
+    else
+     output << object.inspect
+    end
+    output
   end
 end
