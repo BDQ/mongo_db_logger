@@ -44,7 +44,7 @@ class MongoLogger < ActiveSupport::BufferedLogger
 
   def mongoize(options={})   
     @mongo_record = options.merge({
-      :messages => Hash.new { |hash, key| hash[key] = Array.new },
+      :messages => [],
       :request_time => Time.now.utc
     })
     runtime = Benchmark.measure do
@@ -69,9 +69,9 @@ class MongoLogger < ActiveSupport::BufferedLogger
     unless @level > severity
       if defined?(ActiveRecord) and ActiveRecord::Base.colorize_logging
         # remove colorization done by rails and just save the actual message
-        @mongo_record[:messages][level_to_sym(severity)] << message.gsub(/(\e(\[([\d;]*[mz]?))?)?/, '').strip rescue nil
+        @mongo_record[:messages] << { :level => level_to_sym(severity), :message => message.gsub(/(\e(\[([\d;]*[mz]?))?)?/, '').strip } rescue nil
       else
-        @mongo_record[:messages][level_to_sym(severity)] << message
+        @mongo_record[:messages] << { :level => level_to_sym(severity), :message => message }
       end
     end
 
