@@ -56,11 +56,10 @@ class MongoLogger < ActiveSupport::BufferedLogger
 
   def add_metadata(options={})
     options.each_pair do |key, value|
-      unless [:messages, :request_time, :ip, :runtime].include?(key.to_sym)
-        info("[MongoLogger : metadata] '#{key}' => '#{value}'")
-        @mongo_record[key] = value
+      if @mongo_record[:metadata]
+        @mongo_record[:metadata][key] = value
       else
-        raise ArgumentError, ":#{key} is a reserved key for the mongo logger. Please choose a different key"
+        @mongo_record[:metadata] = { key, value }
       end
     end
   end
