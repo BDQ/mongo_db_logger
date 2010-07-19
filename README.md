@@ -41,13 +41,10 @@ Action, Params and All messages sent to the logger. The structure of the Mongo d
   'runtime'       : runtime,
   'request_time'  : time_of_request,
   'params'        : { }
-  'messages'      : {
-                      'info'  : [ ],
-                      'debug' : [ ],
-                      'error' : [ ],
-                      'warn'  : [ ],
-                      'fatal' : [ ]
-                    }
+  'messages'      : [ 
+                      { 'message' : message, 'level' : log_level },
+                      { 'message' : message, 'level' : log_level }
+                    ]
 }
 </code></pre>
 
@@ -62,6 +59,10 @@ if Rails.logger.respond_to?(:add_metadata)
   Rails.logger.add_metadata(:user_guid =&gt; @user_guid)
 end
 </code></pre>
+
+This will add a 'metadata' key to the log document, with <code>{ 'user_guid' : user_guid }</code> as the value.
+If you metadata is a more complex data type, it will attempt to save it directly to mongo, letting you do deep
+queries into it.
 
 4) And optionally, and PLEASE be sure to protect this behind a login, you can add a basic
 logging view by adding the following to your routes:
@@ -88,7 +89,7 @@ First, here’s how to get a handle on the MongoDB from within a Rails console:
 Once you’ve got the collection, you can find all requests for a specific user (with guid):
 
 <pre><code>
->> cursor = collection.find(:user_guid => '12355')
+>> cursor = collection.find('metadata.user_guid' => '12355')
 => #&lt;Mongo::Cursor:0x1031a3e30 ... &gt;
 >> cursor.count
 => 5
@@ -108,4 +109,4 @@ Find all requests that passed a parameter with a certain value:
 => 22
 </code></pre>
 
-Copyright (c) 2009 Phil Burrows, released under the MIT license
+Copyright (c) 2010 Emily Price, released under the MIT license
